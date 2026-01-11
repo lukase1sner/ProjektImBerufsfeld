@@ -15,20 +15,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, SupabaseBearerAuthFilter supabaseFilter) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            SupabaseBearerAuthFilter supabaseFilter
+    ) throws Exception {
+
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Login bleibt öffentlich
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // alles unter /api braucht Token
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
-                )
-                // ✅ Supabase Bearer Token Filter (anstatt oauth2ResourceServer/jwk)
-                .addFilterBefore(supabaseFilter, UsernamePasswordAuthenticationFilter.class);
+            // 🔴 CORS MUSS vor Security greifen
+            .cors(Customizer.withDefaults())
+
+            // CSRF für REST deaktivieren
+            .csrf(csrf -> csrf.disable())
+
+            .authorizeHttpRequests(auth -> auth
+                // ✅ Preflight Requests IMMER erlauben
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // ✅ Login / Registrierung öffentlich
+                .requestMatchers("/api/auth/**").permitAll()
+
+                // 🔐 Geschützte API
+                .requestMatchers("/api/**").authenticated()
+
+                // Alles andere (z. B. Actuator, Root) offen
+                .anyRequest().permitAll()
+            )
+
+            // 🔐 Supabase Bearer Token Filter
+            .addFilterBefore(
+                supabaseFilter,
+                UsernamePasswordAuthenticationFilter.class
+            );
 
         return http.build();
     }
