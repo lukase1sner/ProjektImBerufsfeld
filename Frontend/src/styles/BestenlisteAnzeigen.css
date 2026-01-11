@@ -1,0 +1,151 @@
+/* Wrapper – identischer Grundstil wie Dashboard */
+.ranking-main-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0px;
+  padding-bottom: 60px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  margin-top: 0;
+  box-sizing: border-box;
+  color: white;
+}
+
+/* -------------------- */
+/* Tabelle / Liste      */
+/* -------------------- */
+.ranking-table-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 1.2rem;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  color: white;
+  box-sizing: border-box;
+}
+
+.ranking-table-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.ranking-table-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.ranking-hint {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.ranking-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ✅ FIX: Spalten so bauen, dass Name wirklich Platz bekommt */
+.ranking-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 64px; /* 👈 WICHTIG */
+  gap: 0.75rem;
+  align-items: center;
+
+  padding: 0.75rem 0.8rem;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-sizing: border-box;
+}
+
+.ranking-header {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-weight: 800;
+}
+
+/* ✅ FIX: verhindert, dass der Name "zu früh" gekürzt wird */
+.ranking-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; /* 👈 EXTREM WICHTIG in CSS Grid */
+}
+
+.align-right {
+  text-align: right;
+}
+
+/* Eingeloggter Benutzer – nur Farbe */
+.ranking-row-highlight {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.28);
+}
+
+/* --------------------- */
+/* Shine Animation       */
+/* --------------------- */
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: -60%;
+  width: 45%;
+  height: 160%;
+  transform: skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  opacity: 1;
+  animation: shine-sweep 0.85s ease;
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .ranking-main-wrapper {
+    align-items: center;
+  }
+
+  .dashboard-admin-title {
+    text-align: center;
+  }
+
+  /* ✅ Mobil: noch kompakter, Name hat trotzdem echten Platz */
+  .ranking-row {
+    grid-template-columns: 32px minmax(0, 1fr) 56px;
+  }
+}

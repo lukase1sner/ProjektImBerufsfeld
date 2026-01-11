@@ -1,0 +1,200 @@
+/* ---------- Hauptbereich – wie im Admin Dashboard ---------- */
+.dashboard-main-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0px;
+  padding-bottom: 60px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  margin-top: 0;
+  box-sizing: border-box;
+  color: white;
+}
+
+/* Titel – identisch wie im Admin Dashboard */
+.dashboard-admin-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 3.5rem;
+  width: 100%;
+  text-align: left;
+}
+
+/* Karten-Wrapper (Default: mobile-first) */
+.dashboard-anwender-cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* ---------- Responsive Layout für Karten ---------- */
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  .dashboard-main-wrapper {
+    padding-top: 0;
+    align-items: center;
+  }
+
+  .dashboard-admin-title {
+    text-align: center;
+  }
+
+  .dashboard-anwender-cards {
+    width: 100%;
+    grid-template-columns: 1fr;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-anwender-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+}
+
+/* Tablet (768px – 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .dashboard-admin-title {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .dashboard-anwender-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-anwender-card {
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+}
+
+/* Desktop (ab 1024px) */
+@media (min-width: 1024px) {
+  .dashboard-anwender-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .dashboard-anwender-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+/* ---------- Einzelkarte – Glass Effekt ---------- */
+.dashboard-anwender-card {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 180px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+  color: white;
+}
+
+.dashboard-anwender-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Header: Icon + Text */
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Icons */
+.card-icon {
+  font-size: 28px;
+}
+
+/* Icons schwarz */
+.dashboard-anwender-card .card-icon {
+  color: #000000;
+}
+
+/* ---------- Buttons ---------- */
+.dashboard-anwender-button {
+  border: none;
+  padding: 0.75rem 1.2rem;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+
+  /* 🟣 Einfarbig */
+  background-color: #652965;
+}
+
+/* Shine Effekt */
+.dashboard-anwender-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+.dashboard-anwender-button:hover::before {
+  left: 125%;
+}
+
+.dashboard-anwender-button:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+/* ✅ FIX: Überschrift IMMER 1 Zeile (auch mobil) */
+.dashboard-anwender-card .dashboard-card-header h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+/* Very large screens */
+@media (min-width: 1400px) {
+  /* bewusst leer – exakt wie Admin */
+}

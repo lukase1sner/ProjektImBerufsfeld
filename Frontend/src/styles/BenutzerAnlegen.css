@@ -1,0 +1,260 @@
+/* === Material Symbols Setup (Icons-Stil wie Sidebar) === */
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 200,
+    "GRAD" 0,
+    "opsz" 24;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---------- Hauptbereich ---------- */
+.benutzer-anlegen-main-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0px;
+  padding-bottom: 60px;
+  margin-top: 0;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+  color: white;
+}
+
+/* ---------- Titel ---------- */
+.benutzer-anlegen-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 3.5rem;
+  width: 100%;
+  text-align: left;
+}
+
+/* ---------- Formularbox (Glass Card) ---------- */
+.benutzer-anlegen-form {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.benutzer-anlegen-form:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- Formulargruppe ---------- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* ---------- Input Felder ---------- */
+.benutzer-anlegen-input {
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+
+  color: #ffffff;
+  font-size: 1rem;
+
+  outline: none;
+  box-shadow: none;
+
+  transition: border-color 0.2s ease;
+
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.benutzer-anlegen-input::placeholder {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.benutzer-anlegen-input:focus {
+  border-color: #652965;
+}
+
+/* Fehler Input */
+.benutzer-anlegen-input.error {
+  border-color: #ff1f1f;
+}
+
+/* ---------- Select ---------- */
+.benutzer-anlegen-form select.benutzer-anlegen-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 22px;
+  padding-right: 42px;
+}
+
+.benutzer-anlegen-input option {
+  background-color: #16161d;
+  color: #ffffff;
+}
+
+/* ---------- Passwort ---------- */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  font-size: 1.6rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- Button ---------- */
+.benutzer-anlegen-button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.2rem;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  background-color: #652965;
+  width: 100%;
+}
+
+/* Shine Effekt */
+.benutzer-anlegen-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+.benutzer-anlegen-button:hover::before {
+  left: 125%;
+}
+
+.benutzer-anlegen-button:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.benutzer-anlegen-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- ✅ Erfolgsmeldung (Glass Card, grün) ---------- */
+.success-message {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(123, 211, 137, 0.65);
+  border-radius: 12px;
+
+  padding: 0.95rem 1.1rem;
+  margin-bottom: 1rem;
+
+  color: #7bd389;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
+}
+
+/* ---------- ❌ Fehlermeldung (Glass Card, rot) ---------- */
+.benutzer-anlegen-errorbox {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 31, 31, 0.55);
+  border-radius: 12px;
+
+  padding: 0.95rem 1.1rem;
+  margin-bottom: 1rem;
+
+  color: #ff1f1f;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
+}
+
+/* alte error-message neutralisieren */
+.error-message {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* ---------- Feld-Fehlermeldungen ---------- */
+.field-error {
+  color: #ff1f1f;
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0 0.2rem;
+  font-weight: 600;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .benutzer-anlegen-form {
+    max-width: 100%;
+  }
+
+  .benutzer-anlegen-title {
+    text-align: center;
+  }
+}

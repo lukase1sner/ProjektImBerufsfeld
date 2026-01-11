@@ -1,0 +1,503 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
+/* ✅ WICHTIG: damit die Icons NICHT als "edit/delete" Text erscheinen */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined" !important;
+  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
+  user-select: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Wrapper */
+.useradmin-main-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding-top: 0px;
+  padding-bottom: 60px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  box-sizing: border-box;
+  color: white;
+}
+
+/* Card wie Bestenliste */
+.useradmin-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 1.2rem;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+
+  font-family: inherit;
+}
+
+/* Head */
+.useradmin-head {
+  display: flex;
+  justify-content: flex-end; /* ✅ nur Hint rechts */
+  align-items: flex-end;
+  margin-bottom: 0.9rem;
+}
+
+.useradmin-hint {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* Filter Row */
+.useradmin-filters {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr 280px;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.useradmin-filter {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  font-family: inherit;
+}
+
+.useradmin-filter::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.useradmin-filter option {
+  background-color: #16161d;
+  color: #ffffff;
+}
+
+.useradmin-results {
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  background-color: #652965;
+  color: white;
+
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+
+  font-family: inherit;
+}
+
+.useradmin-results:hover {
+  transform: translateY(-2px);
+  opacity: 0.98;
+}
+
+/* ✅ Select Pfeil wie bei BenutzerAnlegen (für Filter + Modal Role Select) */
+.useradmin-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 22px;
+  padding-right: 42px;
+}
+
+/* Filter responsive */
+@media (max-width: 1024px) {
+  .useradmin-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 767px) {
+  .useradmin-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scroll Bereich */
+.useradmin-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+
+  /* ✅ Abstand zur Scrollbar */
+  padding-bottom: 18px;
+}
+
+/* Scrollbar */
+.useradmin-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+.useradmin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+.useradmin-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+}
+
+/* ✅ Table: so breit wie Inhalt -> du kannst sauber bis Aktionen scrollen */
+.useradmin-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  width: max-content;
+  min-width: 1250px;
+  font-family: inherit;
+}
+
+/* ✅ Rows: Header & alle Zeilen exakt gleich breit */
+.useradmin-row {
+  width: max-content;
+  display: grid;
+
+  /* ✅ Actions-Spalte fix + genug Platz für 2 Buttons */
+  grid-template-columns: 190px 150px 170px 320px 360px 170px;
+
+  /* ✅ FIX: etwas mehr Abstand zwischen Passwort und Aktionen */
+  column-gap: 1.1rem;
+
+  align-items: center;
+
+  padding: 0.75rem 0.8rem;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-sizing: border-box;
+
+  font-family: inherit;
+}
+
+.useradmin-row-header {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.useradmin-role {
+  font-weight: 800;
+  white-space: nowrap;
+}
+.useradmin-text {
+  font-weight: 700;
+}
+
+/* Email + Hash NICHT monospace */
+.useradmin-email,
+.useradmin-hash {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  letter-spacing: normal !important;
+  font-weight: 700;
+  opacity: 0.92;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ Header "Aktionen" so ausrichten, dass Text dort startet wo Icon-Block startet */
+.useradmin-actions-head {
+  display: flex;
+  justify-content: flex-end; /* rechts wie Icons */
+  align-items: center;
+  padding-right: 6px; /* gleich wie Actions */
+}
+
+/* ✅ Fixe Box = Breite der beiden Buttons + Gap (44 + 10 + 44 = 98) */
+.useradmin-actions-label {
+  width: 98px;
+  text-align: left; /* Text startet am linken Rand des Icon-Blocks */
+}
+
+/* ✅ Aktionen nach rechts schieben -> keine rechte Lücke */
+.useradmin-actions {
+  display: flex;
+  justify-content: flex-end; /* ✅ wichtig */
+  align-items: center;
+  gap: 10px;
+
+  padding-right: 6px; /* gleich wie Header */
+}
+
+/* Icon Buttons */
+.useradmin-iconbtn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: white;
+
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  transition: transform 0.18s ease, opacity 0.18s ease;
+  font-family: inherit;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 44px;
+  min-height: 40px;
+}
+
+.useradmin-iconbtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.98;
+}
+
+.useradmin-iconbtn .material-symbols-outlined {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.useradmin-iconbtn.danger {
+  background: rgba(255, 31, 31, 0.14);
+  border: 1px solid rgba(255, 31, 31, 0.35);
+}
+
+/* Modal */
+.useradmin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.useradmin-modal {
+  width: 100%;
+  max-width: 520px;
+
+  background: rgba(60, 60, 70, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  padding: 1.4rem;
+  color: white;
+  font-family: inherit;
+}
+
+.useradmin-modal-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.useradmin-modal-text {
+  margin: 0.2rem 0 1rem 0;
+  opacity: 0.92;
+  line-height: 1.45;
+}
+
+.useradmin-center {
+  text-align: center;
+}
+
+.useradmin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.useradmin-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.useradmin-input {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+  color: white;
+
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.useradmin-divider {
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.14);
+  margin: 0.2rem 0;
+}
+
+.useradmin-reset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.useradmin-reset-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.useradmin-password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.useradmin-password-field .useradmin-input {
+  padding-right: 48px;
+}
+
+.useradmin-password-toggle {
+  position: absolute;
+  right: 12px;
+  font-size: 1.6rem;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+
+.useradmin-password-toggle:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.useradmin-resetbtn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  background-color: #652965;
+  color: white;
+
+  position: relative;
+  overflow: hidden;
+
+  transition: transform 0.18s ease, opacity 0.18s ease;
+  align-self: flex-start;
+  font-family: inherit;
+}
+
+.useradmin-resetbtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.98;
+}
+
+.useradmin-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 1.2rem;
+}
+
+.useradmin-modalbtn {
+  width: 50%;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.useradmin-modalbtn.cancel {
+  background-color: #555555;
+  color: white;
+}
+
+.useradmin-modalbtn.save {
+  background-color: #652965;
+  color: white;
+}
+
+.useradmin-modalbtn.danger {
+  background-color: #e53935;
+  color: white;
+}
+
+/* Shine */
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: -60%;
+  width: 45%;
+  height: 160%;
+  transform: skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  opacity: 1;
+  animation: shine-sweep 0.85s ease;
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .useradmin-main-wrapper {
+    align-items: center;
+  }
+  .dashboard-admin-title {
+    text-align: center;
+  }
+}
