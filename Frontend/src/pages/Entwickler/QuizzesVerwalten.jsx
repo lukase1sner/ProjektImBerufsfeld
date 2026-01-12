@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EntwicklerLayout from "../../layout/EntwicklerLayout";
 import "../../styles/QuizzesVerwalten.css";
 
-// Die Umgebungsvariable API_BASE_URL verwenden
+// Die Umgebungsvariable API_BASE_URL verwenden (z.B. https://quizapp-bchr.onrender.com)
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const QuizzesVerwalten = () => {
@@ -50,9 +50,14 @@ const QuizzesVerwalten = () => {
     setSaveType("");
 
     try {
+      if (!API_BASE) {
+        throw new Error("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      }
+
       const authToken = getAuthTokenOrThrow();
 
-      const res = await fetch(`${API_BASE}/quizzes`, {
+      // ✅ FIX: /api Prefix (damit Backend-Route + CorsConfig(/api/**) passt)
+      const res = await fetch(`${API_BASE}/api/quizzes`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -98,9 +103,14 @@ const QuizzesVerwalten = () => {
     setSaveType("");
 
     try {
+      if (!API_BASE) {
+        throw new Error("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      }
+
       const authToken = getAuthTokenOrThrow();
 
-      const res = await fetch(`${API_BASE}/quizzes/${quizId}`, {
+      // ✅ FIX: /api Prefix
+      const res = await fetch(`${API_BASE}/api/quizzes/${quizId}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -244,13 +254,18 @@ const QuizzesVerwalten = () => {
     };
 
     try {
+      if (!API_BASE) {
+        throw new Error("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      }
+
       const authToken = getAuthTokenOrThrow();
 
       setIsSaving(true);
       setSaveMsg("");
       setSaveType("");
 
-      const res = await fetch(`${API_BASE}/quizzes/${quizDetail.id}`, {
+      // ✅ FIX: /api Prefix
+      const res = await fetch(`${API_BASE}/api/quizzes/${quizDetail.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -293,13 +308,18 @@ const QuizzesVerwalten = () => {
     if (!quizDetail || isDeleting) return;
 
     try {
+      if (!API_BASE) {
+        throw new Error("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      }
+
       const authToken = getAuthTokenOrThrow();
 
       setIsDeleting(true);
       setSaveMsg("");
       setSaveType("");
 
-      const res = await fetch(`${API_BASE}/quizzes/${quizDetail.id}`, {
+      // ✅ FIX: /api Prefix
+      const res = await fetch(`${API_BASE}/api/quizzes/${quizDetail.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${authToken}`,
