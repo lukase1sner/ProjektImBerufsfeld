@@ -429,7 +429,6 @@ function Benutzerverwaltung() {
                 <div>Vorname</div>
                 <div>Nachname</div>
                 <div>E-Mail</div>
-                <div>Passwort (Hash)</div>
 
                 {/* ✅ FIX: Text startet exakt wo die Icon-Box startet */}
                 <div className="useradmin-actions-head">
@@ -443,7 +442,6 @@ function Benutzerverwaltung() {
                   <div className="useradmin-text">{u.firstName}</div>
                   <div className="useradmin-text">{u.lastName}</div>
                   <div className="useradmin-email">{u.email}</div>
-                  <div className="useradmin-hash">{u.passwordHash}</div>
 
                   <div className="useradmin-actions">
                     <button
