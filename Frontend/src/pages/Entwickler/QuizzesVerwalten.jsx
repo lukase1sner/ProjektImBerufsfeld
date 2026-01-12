@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import EntwicklerLayout from "../../layout/EntwicklerLayout";
 import "../../styles/QuizzesVerwalten.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL; // Die API_BASE URL aus der Umgebungsdatei
+// Die Umgebungsvariable API_BASE_URL verwenden
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const QuizzesVerwalten = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -37,7 +38,7 @@ const QuizzesVerwalten = () => {
   };
 
   const getAuthTokenOrThrow = () => {
-    const token = localStorage.getItem("authToken"); // <- falls bei dir anders, hier ändern
+    const token = localStorage.getItem("authToken");
     if (!token) throw new Error("Missing Bearer token (authToken fehlt). Bitte neu einloggen.");
     return token;
   };
