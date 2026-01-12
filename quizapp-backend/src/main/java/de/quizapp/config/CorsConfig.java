@@ -8,15 +8,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    // Die erlaubten Ursprünge (hier die URL deines Frontends in Vercel)
+    @Value("${app.cors.allowed-origins:https://projekt-im-berufsfeld.vercel.app}")
     private String allowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
+                // Erlaubt den angegebenen Ursprung (Frontend URL)
                 .allowedOrigins(allowedOrigins.split(","))
+                // Erlaubt die angegebenen HTTP-Methoden
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                // Erlaubt alle Header
                 .allowedHeaders("*")
+                // Erlaubt die Übertragung von Anmeldeinformationen (Cookies)
                 .allowCredentials(true);
     }
 }
