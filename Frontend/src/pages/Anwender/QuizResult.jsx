@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 import "../../styles/Quiz.css";
 
-const API_BASE = "http://localhost:8080/api";
-
 const QuizResult = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const { attemptId } = useParams();
   const navigate = useNavigate();
   const authToken = localStorage.getItem("authToken");
@@ -16,28 +16,46 @@ const QuizResult = () => {
 
   useEffect(() => {
     const load = async () => {
-      if (!authToken) return;
+      if (!API_BASE) {
+        setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+        setLoading(false);
+        return;
+      }
+
+      if (!authToken) {
+        setError("Nicht eingeloggt.");
+        setLoading(false);
+        return;
+      }
 
       try {
-        const res = await fetch(
-          `${API_BASE}/play/attempts/${attemptId}/result`,
-          { headers: { Authorization: `Bearer ${authToken}` } }
-        );
+        const res = await fetch(`${API_BASE}/api/play/attempts/${attemptId}/result`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
 
-        const raw = await res.text();
-        const json = raw ? JSON.parse(raw) : null;
-        if (!res.ok) throw new Error();
+        const raw = await res.text().catch(() => "");
+        let json = null;
+        try {
+          json = raw ? JSON.parse(raw) : null;
+        } catch {
+          json = null;
+        }
+
+        if (!res.ok) {
+          const msg = json?.message || json?.error || raw || `HTTP ${res.status}`;
+          throw new Error(msg);
+        }
 
         setData(json);
-      } catch {
-        setError("Ergebnis konnte nicht geladen werden.");
+      } catch (e) {
+        setError(e?.message || "Ergebnis konnte nicht geladen werden.");
       } finally {
         setLoading(false);
       }
     };
 
     load();
-  }, [attemptId, authToken]);
+  }, [attemptId, authToken, API_BASE]);
 
   const stats = useMemo(() => {
     if (!data) return null;
@@ -119,9 +137,7 @@ const QuizResult = () => {
             >
               <button
                 className="quizplay-next btn-shine"
-                onClick={() =>
-                  navigate(`/anwender/quiz/review/${attemptId}/0`)
-                }
+                onClick={() => navigate(`/anwender/quiz/review/${attemptId}/0`)}
               >
                 Review
               </button>

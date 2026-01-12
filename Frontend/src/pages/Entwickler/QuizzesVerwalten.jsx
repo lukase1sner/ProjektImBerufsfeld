@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EntwicklerLayout from "../../layout/EntwicklerLayout";
 import "../../styles/QuizzesVerwalten.css";
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL; // Die API_BASE URL aus der Umgebungsdatei
 
 const QuizzesVerwalten = () => {
   const [quizzes, setQuizzes] = useState([]);

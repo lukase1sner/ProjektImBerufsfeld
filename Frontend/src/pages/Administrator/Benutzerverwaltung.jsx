@@ -3,6 +3,8 @@ import "../../styles/Benutzerverwaltung.css";
 import AdminLayout from "../../layout/AdminLayout.jsx";
 
 function Benutzerverwaltung() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   // ✅ allUsers = immer komplette Basis (ungefiltert)
   const [allUsers, setAllUsers] = useState([]);
   // ✅ users = aktuell angezeigte Liste (ggf. vom Backend gefiltert)
@@ -72,6 +74,12 @@ function Benutzerverwaltung() {
       setLoadError("");
 
       try {
+        if (!API_BASE) {
+          throw new Error(
+            "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+          );
+        }
+
         const params = new URLSearchParams();
         if (role && role !== "ALL") params.append("role", role);
         if (firstName && firstName.trim())
@@ -80,7 +88,7 @@ function Benutzerverwaltung() {
           params.append("lastName", lastName.trim());
 
         const qs = params.toString();
-        const url = `http://localhost:8080/api/admin/users${qs ? `?${qs}` : ""}`;
+        const url = `${API_BASE}/api/admin/users${qs ? `?${qs}` : ""}`;
 
         const res = await fetch(url, {
           headers: authToken
@@ -94,12 +102,16 @@ function Benutzerverwaltung() {
             typeof body === "string"
               ? body
               : body?.error || body?.message || JSON.stringify(body);
-          throw new Error(`Fehler ${res.status}: ${msg || "Fehler beim Laden."}`);
+          throw new Error(
+            `Fehler ${res.status}: ${msg || "Fehler beim Laden."}`
+          );
         }
 
         const body = await readResponseBody(res);
         if (!Array.isArray(body)) {
-          throw new Error(`Unerwartetes Format vom Server: ${JSON.stringify(body)}`);
+          throw new Error(
+            `Unerwartetes Format vom Server: ${JSON.stringify(body)}`
+          );
         }
 
         const mapped = body.map(mapUser);
@@ -123,7 +135,7 @@ function Benutzerverwaltung() {
         setLoading(false);
       }
     },
-    [authToken]
+    [authToken, API_BASE]
   );
 
   useEffect(() => {
@@ -139,7 +151,9 @@ function Benutzerverwaltung() {
 
     return users.filter((u) => {
       const roleOk = role === "ALL" ? true : u.role === role;
-      const firstOk = !fn ? true : (u.firstName || "").toLowerCase().includes(fn);
+      const firstOk = !fn
+        ? true
+        : (u.firstName || "").toLowerCase().includes(fn);
       const lastOk = !ln ? true : (u.lastName || "").toLowerCase().includes(ln);
       return roleOk && firstOk && lastOk;
     });
@@ -153,7 +167,9 @@ function Benutzerverwaltung() {
 
     return allUsers.filter((u) => {
       const roleOk = role === "ALL" ? true : u.role === role;
-      const firstOk = !fn ? true : (u.firstName || "").toLowerCase().includes(fn);
+      const firstOk = !fn
+        ? true
+        : (u.firstName || "").toLowerCase().includes(fn);
       const lastOk = !ln ? true : (u.lastName || "").toLowerCase().includes(ln);
       return roleOk && firstOk && lastOk;
     }).length;
@@ -204,7 +220,13 @@ function Benutzerverwaltung() {
 
   const saveEdit = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/admin/users/${editId}`, {
+      if (!API_BASE) {
+        throw new Error(
+          "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+        );
+      }
+
+      const res = await fetch(`${API_BASE}/api/admin/users/${editId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -224,12 +246,18 @@ function Benutzerverwaltung() {
           typeof body === "string"
             ? body
             : body?.error || body?.message || JSON.stringify(body);
-        throw new Error(`Fehler ${res.status}: ${msg || "Update fehlgeschlagen."}`);
+        throw new Error(
+          `Fehler ${res.status}: ${msg || "Update fehlgeschlagen."}`
+        );
       }
 
       // ✅ beide Listen lokal aktualisieren
-      setUsers((prev) => prev.map((u) => (u.id === editId ? { ...u, ...formData } : u)));
-      setAllUsers((prev) => prev.map((u) => (u.id === editId ? { ...u, ...formData } : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u.id === editId ? { ...u, ...formData } : u))
+      );
+      setAllUsers((prev) =>
+        prev.map((u) => (u.id === editId ? { ...u, ...formData } : u))
+      );
 
       closeEdit();
     } catch (e) {
@@ -240,7 +268,13 @@ function Benutzerverwaltung() {
 
   const confirmDelete = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/admin/users/${deleteId}`, {
+      if (!API_BASE) {
+        throw new Error(
+          "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+        );
+      }
+
+      const res = await fetch(`${API_BASE}/api/admin/users/${deleteId}`, {
         method: "DELETE",
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
       });
@@ -251,7 +285,9 @@ function Benutzerverwaltung() {
           typeof body === "string"
             ? body
             : body?.error || body?.message || JSON.stringify(body);
-        throw new Error(`Fehler ${res.status}: ${msg || "Löschen fehlgeschlagen."}`);
+        throw new Error(
+          `Fehler ${res.status}: ${msg || "Löschen fehlgeschlagen."}`
+        );
       }
 
       // ✅ beide Listen lokal aktualisieren
@@ -272,8 +308,14 @@ function Benutzerverwaltung() {
     }
 
     try {
+      if (!API_BASE) {
+        throw new Error(
+          "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+        );
+      }
+
       const res = await fetch(
-        `http://localhost:8080/api/admin/users/${editId}/reset-password`,
+        `${API_BASE}/api/admin/users/${editId}/reset-password`,
         {
           method: "POST",
           headers: {
@@ -290,7 +332,9 @@ function Benutzerverwaltung() {
           typeof body === "string"
             ? body
             : body?.error || body?.message || JSON.stringify(body);
-        throw new Error(`Fehler ${res.status}: ${msg || "Reset fehlgeschlagen."}`);
+        throw new Error(
+          `Fehler ${res.status}: ${msg || "Reset fehlgeschlagen."}`
+        );
       }
 
       // ✅ UI: Feld + Button verschwinden, Erfolgsmeldung erscheint
@@ -372,7 +416,9 @@ function Benutzerverwaltung() {
           </div>
 
           {loadError && (
-            <div style={{ marginBottom: "12px", opacity: 0.95 }}>{loadError}</div>
+            <div style={{ marginBottom: "12px", opacity: 0.95 }}>
+              {loadError}
+            </div>
           )}
 
           {/* Table Scroll */}
@@ -433,7 +479,10 @@ function Benutzerverwaltung() {
         {/* EDIT MODAL */}
         {editId && (
           <div className="useradmin-modal-overlay" onClick={closeEdit}>
-            <div className="useradmin-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="useradmin-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3 className="useradmin-modal-title">Benutzer bearbeiten</h3>
 
               <div className="useradmin-form">
@@ -469,7 +518,11 @@ function Benutzerverwaltung() {
 
                 <label className="useradmin-label">
                   Passwort (Hash)
-                  <input className="useradmin-input" value={formData.passwordHash} readOnly />
+                  <input
+                    className="useradmin-input"
+                    value={formData.passwordHash}
+                    readOnly
+                  />
                 </label>
 
                 <label className="useradmin-label">
@@ -489,7 +542,9 @@ function Benutzerverwaltung() {
                 <div className="useradmin-divider" />
 
                 <div className="useradmin-reset">
-                  <div className="useradmin-reset-title">Passwort zurücksetzen</div>
+                  <div className="useradmin-reset-title">
+                    Passwort zurücksetzen
+                  </div>
 
                   {resetSuccess ? (
                     <div
@@ -522,7 +577,11 @@ function Benutzerverwaltung() {
                           className="material-symbols-outlined useradmin-password-toggle"
                           role="button"
                           aria-pressed={showResetPassword}
-                          aria-label={showResetPassword ? "Passwort ausblenden" : "Passwort anzeigen"}
+                          aria-label={
+                            showResetPassword
+                              ? "Passwort ausblenden"
+                              : "Passwort anzeigen"
+                          }
                           onClick={() => setShowResetPassword((s) => !s)}
                         >
                           {showResetPassword ? "visibility" : "visibility_off"}
@@ -564,10 +623,16 @@ function Benutzerverwaltung() {
         {/* DELETE MODAL */}
         {deleteId && (
           <div className="useradmin-modal-overlay" onClick={closeDelete}>
-            <div className="useradmin-modal" onClick={(e) => e.stopPropagation()}>
-              <h3 className="useradmin-modal-title useradmin-center">Benutzer löschen?</h3>
+            <div
+              className="useradmin-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="useradmin-modal-title useradmin-center">
+                Benutzer löschen?
+              </h3>
               <p className="useradmin-modal-text useradmin-center">
-                Möchten Sie diesen Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+                Möchten Sie diesen Benutzer wirklich löschen? Diese Aktion kann
+                nicht rückgängig gemacht werden.
               </p>
 
               <div className="useradmin-modal-actions">

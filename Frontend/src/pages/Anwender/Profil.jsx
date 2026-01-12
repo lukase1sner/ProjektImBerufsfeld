@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/Profil.css";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 
-const API_BASE = "http://localhost:8080/api";
-
 const Profil = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   // ✅ Robust: Token normalisieren (wie bei Quiz.jsx)
   const getAuthToken = () => {
     const candidates = [
@@ -71,6 +71,12 @@ const Profil = () => {
   };
 
   const loadProfile = async () => {
+    if (!API_BASE) {
+      setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      setLoading(false);
+      return;
+    }
+
     if (!authToken) {
       setError("Nicht eingeloggt.");
       setLoading(false);
@@ -81,7 +87,7 @@ const Profil = () => {
       setLoading(true);
       setError("");
 
-      const res = await fetch(`${API_BASE}/profile`, {
+      const res = await fetch(`${API_BASE}/api/profile`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
@@ -93,7 +99,9 @@ const Profil = () => {
         lastName: json?.lastName || "",
         email: json?.email || "",
         points: Number.isFinite(json?.points) ? json.points : 0,
-        finishedQuizzes: Number.isFinite(json?.finishedQuizzes) ? json.finishedQuizzes : 0,
+        finishedQuizzes: Number.isFinite(json?.finishedQuizzes)
+          ? json.finishedQuizzes
+          : 0,
       });
     } catch (e) {
       console.error(e);
@@ -106,7 +114,7 @@ const Profil = () => {
   useEffect(() => {
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authToken]);
+  }, [authToken, API_BASE]);
 
   const initials =
     (user.firstName?.charAt(0) || "").toUpperCase() +
@@ -131,6 +139,10 @@ const Profil = () => {
   };
 
   const onSave = async () => {
+    if (!API_BASE) {
+      setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      return;
+    }
     if (!authToken) return;
 
     const payload = {
@@ -143,7 +155,7 @@ const Profil = () => {
       setSaving(true);
       setError("");
 
-      const res = await fetch(`${API_BASE}/profile`, {
+      const res = await fetch(`${API_BASE}/api/profile`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -196,7 +208,10 @@ const Profil = () => {
                 </div>
               </div>
 
-              <button className="profil-edit-button btn-shine" onClick={openModal}>
+              <button
+                className="profil-edit-button btn-shine"
+                onClick={openModal}
+              >
                 Profil bearbeiten
               </button>
             </div>
@@ -220,7 +235,10 @@ const Profil = () => {
 
       {isModalOpen && (
         <div className="profil-modal-overlay" onClick={closeModal}>
-          <div className="profil-modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="profil-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="profil-modal-title">Profil bearbeiten</h3>
 
             <div className="profil-form">

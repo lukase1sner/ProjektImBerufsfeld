@@ -4,6 +4,8 @@ import "../../styles/DashboardAdmin.css";
 import AdminLayout from "../../layout/AdminLayout.jsx";
 
 const DashboardAdmin = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [user, setUser] = useState({ firstName: "", lastName: "" });
   const navigate = useNavigate();
 
@@ -14,14 +16,16 @@ const DashboardAdmin = () => {
       if (!authUserId || !authToken) return;
 
       try {
-        const res = await fetch(
-          `http://localhost:8080/api/users/auth/${authUserId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
+        if (!API_BASE) {
+          console.warn("VITE_API_BASE_URL ist nicht gesetzt.");
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/api/users/auth/${authUserId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
 
         if (res.ok) {
           const data = await res.json();
@@ -38,7 +42,7 @@ const DashboardAdmin = () => {
     }
 
     loadUser();
-  }, []);
+  }, [API_BASE]);
 
   return (
     <AdminLayout>

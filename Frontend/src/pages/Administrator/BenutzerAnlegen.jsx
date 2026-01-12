@@ -114,6 +114,13 @@ const BenutzerAnlegen = () => {
     setLoading(true);
 
     try {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL;
+      if (!API_BASE) {
+        throw new Error(
+          "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+        );
+      }
+
       const authToken = localStorage.getItem("authToken");
       if (!authToken) {
         throw new Error("Nicht eingeloggt (Token fehlt). Bitte neu einloggen.");
@@ -128,7 +135,7 @@ const BenutzerAnlegen = () => {
         password: formData.passwort,
       };
 
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch(`${API_BASE}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -4,6 +4,8 @@ import "../../styles/DashboardEntwickler.css";
 import EntwicklerLayout from "../../layout/EntwicklerLayout.jsx";
 
 const DashboardEntwickler = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [user, setUser] = useState({ firstName: "", lastName: "" });
   const navigate = useNavigate();
 
@@ -13,9 +15,14 @@ const DashboardEntwickler = () => {
       const authToken = localStorage.getItem("authToken");
       if (!authUserId || !authToken) return;
 
+      if (!API_BASE) {
+        console.warn("VITE_API_BASE_URL ist nicht gesetzt.");
+        return;
+      }
+
       try {
         const res = await fetch(
-          `http://localhost:8080/api/users/auth/${authUserId}`,
+          `${API_BASE}/api/users/auth/${authUserId}`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -38,7 +45,7 @@ const DashboardEntwickler = () => {
     }
 
     loadUser();
-  }, []);
+  }, [API_BASE]);
 
   return (
     <EntwicklerLayout>

@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/NeueQuizzesEntdecken.css";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 
-const API_BASE = "http://localhost:8080/api";
-
 const NeueQuizzesEntdecken = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
 
   const [quizzes, setQuizzes] = useState([]);
@@ -24,6 +23,12 @@ const NeueQuizzesEntdecken = () => {
 
   useEffect(() => {
     const loadQuizzes = async () => {
+      if (!API_BASE) {
+        setLoading(false);
+        setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+        return;
+      }
+
       const authToken = localStorage.getItem("authToken");
       if (!authToken) {
         setLoading(false);
@@ -35,7 +40,7 @@ const NeueQuizzesEntdecken = () => {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE}/play/quizzes/new`, {
+        const res = await fetch(`${API_BASE}/api/play/quizzes/new`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
 
@@ -56,14 +61,16 @@ const NeueQuizzesEntdecken = () => {
         setQuizzes(normalized);
       } catch (e) {
         console.error(e);
-        setError(`Quizzes konnten nicht geladen werden: ${e?.message || "Failed to fetch"}`);
+        setError(
+          `Quizzes konnten nicht geladen werden: ${e?.message || "Failed to fetch"}`
+        );
       } finally {
         setLoading(false);
       }
     };
 
     loadQuizzes();
-  }, []);
+  }, [API_BASE]);
 
   const handleOpen = (quiz) => {
     // du navigierst hier zu /anwender/quiz/:id

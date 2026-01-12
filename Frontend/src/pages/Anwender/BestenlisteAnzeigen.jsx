@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/BestenlisteAnzeigen.css";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 
-const API_BASE = "http://localhost:8080/api";
-
 const BestenlisteAnzeigen = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   // ✅ Robust: Token normalisieren (Quotes/JSON/Bearer/Whitespace)
   const getAuthToken = () => {
     const candidates = [
@@ -57,6 +57,12 @@ const BestenlisteAnzeigen = () => {
 
   useEffect(() => {
     const load = async () => {
+      if (!API_BASE) {
+        setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+        setLoading(false);
+        return;
+      }
+
       if (!authToken) {
         setError("Nicht eingeloggt.");
         setLoading(false);
@@ -67,24 +73,27 @@ const BestenlisteAnzeigen = () => {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${API_BASE}/leaderboard?limit=50`, {
+        const res = await fetch(`${API_BASE}/api/leaderboard?limit=50`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
 
         const { raw, json } = await fetchJsonSafe(res);
-        if (!res.ok) throw new Error(json?.message || raw || `HTTP ${res.status}`);
+        if (!res.ok)
+          throw new Error(json?.message || raw || `HTTP ${res.status}`);
 
         setRanking(Array.isArray(json) ? json : []);
       } catch (e) {
         console.error(e);
-        setError(`Bestenliste konnte nicht geladen werden: ${e?.message || "Fehler"}`);
+        setError(
+          `Bestenliste konnte nicht geladen werden: ${e?.message || "Fehler"}`
+        );
       } finally {
         setLoading(false);
       }
     };
 
     load();
-  }, [authToken]);
+  }, [authToken, API_BASE]);
 
   return (
     <AnwenderLayout>
@@ -109,7 +118,9 @@ const BestenlisteAnzeigen = () => {
               </div>
 
               {ranking.length === 0 && (
-                <div style={{ opacity: 0.85, paddingTop: 6 }}>Noch keine Daten vorhanden.</div>
+                <div style={{ opacity: 0.85, paddingTop: 6 }}>
+                  Noch keine Daten vorhanden.
+                </div>
               )}
 
               {ranking.map((u, idx) => {
@@ -118,16 +129,23 @@ const BestenlisteAnzeigen = () => {
                 return (
                   <div
                     key={u.userId || `${u.rank}-${idx}`}
-                    className={`ranking-row ${isHighlighted ? "ranking-row-highlight" : ""}`}
+                    className={`ranking-row ${
+                      isHighlighted ? "ranking-row-highlight" : ""
+                    }`}
                   >
                     <div>{Number.isFinite(u.rank) ? u.rank : idx + 1}</div>
 
                     {/* ✅ Name: kein Umbruch, mehr Platz durch CSS Grid Fix */}
-                    <div className="ranking-name" title={u.name || "Unbekannt"}>
+                    <div
+                      className="ranking-name"
+                      title={u.name || "Unbekannt"}
+                    >
                       {u.name || "Unbekannt"}
                     </div>
 
-                    <div className="align-right">{Number.isFinite(u.points) ? u.points : 0}</div>
+                    <div className="align-right">
+                      {Number.isFinite(u.points) ? u.points : 0}
+                    </div>
                   </div>
                 );
               })}

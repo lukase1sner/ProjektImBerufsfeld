@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 import "../../styles/Quiz.css";
 
-const API_BASE = "http://localhost:8080/api";
-
 const QuizReview = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const { attemptId, position } = useParams();
   const pos = Number(position || 0);
 
@@ -112,41 +112,53 @@ const QuizReview = () => {
       return;
     }
 
+    if (!API_BASE) {
+      setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
 
       const [resQ, resOv] = await Promise.all([
-        fetch(`${API_BASE}/play/attempts/${attemptId}/review/${pos}`, {
+        fetch(`${API_BASE}/api/play/attempts/${attemptId}/review/${pos}`, {
           headers: headers(),
         }),
-        fetch(`${API_BASE}/play/attempts/${attemptId}/overview`, {
+        fetch(`${API_BASE}/api/play/attempts/${attemptId}/overview`, {
           headers: headers(),
         }),
       ]);
 
       const { raw: rawQ, json: jsonQ } = await readBodyOnce(resQ);
-      if (!resQ.ok) throw new Error(jsonQ?.message || rawQ || `HTTP ${resQ.status}`);
+      if (!resQ.ok)
+        throw new Error(jsonQ?.message || rawQ || `HTTP ${resQ.status}`);
 
       const { raw: rawOv, json: jsonOv } = await readBodyOnce(resOv);
-      if (!resOv.ok) throw new Error(jsonOv?.message || rawOv || `HTTP ${resOv.status}`);
+      if (!resOv.ok)
+        throw new Error(jsonOv?.message || rawOv || `HTTP ${resOv.status}`);
 
       setQ(jsonQ);
       setOv(jsonOv);
 
       // ✅ Review liefert bereits die Auswertung -> Quiz.jsx UI nachbauen
-      const sel = Number.isInteger(jsonQ?.selectedIndex) ? jsonQ.selectedIndex : null;
+      const sel = Number.isInteger(jsonQ?.selectedIndex)
+        ? jsonQ.selectedIndex
+        : null;
       setSelectedIndex(sel);
 
       // result-Objekt in gleicher Form wie Quiz.jsx (für gleiche CSS/Icons)
       setResult({
         correct: !!jsonQ?.correct,
-        correctIndex: Number.isInteger(jsonQ?.correctIndex) ? jsonQ.correctIndex : null,
+        correctIndex: Number.isInteger(jsonQ?.correctIndex)
+          ? jsonQ.correctIndex
+          : null,
         explanation: jsonQ?.explanation || "",
       });
     } catch (e) {
       console.error(e);
-      setError("Review konnte nicht geladen werden.");
+      setError(e?.message || "Review konnte nicht geladen werden.");
     } finally {
       setLoading(false);
     }
@@ -155,10 +167,11 @@ const QuizReview = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attemptId, pos, authToken]);
+  }, [attemptId, pos, authToken, API_BASE]);
 
   const total = ov?.totalQuestions ?? 0;
-  const progressText = total > 0 ? `Frage ${pos + 1} / ${total}` : `Frage ${pos + 1}`;
+  const progressText =
+    total > 0 ? `Frage ${pos + 1} / ${total}` : `Frage ${pos + 1}`;
 
   const goToPos = (nextPos) => {
     setDropdownOpen(false);
@@ -186,7 +199,9 @@ const QuizReview = () => {
                     aria-haspopup="listbox"
                     aria-expanded={dropdownOpen}
                   >
-                    <span className="material-symbols-outlined">arrow_drop_down_circle</span>
+                    <span className="material-symbols-outlined">
+                      arrow_drop_down_circle
+                    </span>
                   </button>
 
                   {dropdownOpen && (
@@ -199,13 +214,22 @@ const QuizReview = () => {
                         {ov.items.map((it) => {
                           const st = statusFor(it);
                           const isActive = it.position === pos;
-                          const iconName = st === "correct" ? "check_circle" : st === "wrong" ? "cancel" : null;
+                          const iconName =
+                            st === "correct"
+                              ? "check_circle"
+                              : st === "wrong"
+                              ? "cancel"
+                              : null;
 
                           return (
                             <button
                               key={it.position}
                               type="button"
-                              className={["quizplay-qselect-item", `is-${st}`, isActive ? "is-active" : ""]
+                              className={[
+                                "quizplay-qselect-item",
+                                `is-${st}`,
+                                isActive ? "is-active" : "",
+                              ]
                                 .filter(Boolean)
                                 .join(" ")}
                               onClick={() => goToPos(it.position)}
@@ -233,9 +257,6 @@ const QuizReview = () => {
               )}
             </div>
           </div>
-
-          {/* ✅ Scorecard NICHT im Review (wie du willst: gleiche Quiz-UI? -> im Review eher weglassen)
-              Wenn du sie doch willst: einfach wieder einkommentieren und Score aus Result laden. */}
         </div>
 
         {loading && <div className="quizplay-info">Lade...</div>}
@@ -254,7 +275,11 @@ const QuizReview = () => {
                 const isCorrectAnswer = result?.correctIndex === idx;
                 const showCorrect = !!result && isCorrectAnswer;
                 const showWrong = !!result && isSelected && !result.correct;
-                const iconName = showCorrect ? "check_circle" : showWrong ? "cancel" : null;
+                const iconName = showCorrect
+                  ? "check_circle"
+                  : showWrong
+                  ? "cancel"
+                  : null;
 
                 const cls = [
                   "quizplay-option",
@@ -287,9 +312,16 @@ const QuizReview = () => {
 
             {/* ✅ Feedback wie Quiz.jsx */}
             {result && (
-              <div className={["quizplay-feedback", result.correct ? "is-correct" : "is-wrong"].join(" ")}>
+              <div
+                className={[
+                  "quizplay-feedback",
+                  result.correct ? "is-correct" : "is-wrong",
+                ].join(" ")}
+              >
                 <div className="quizplay-feedback-title">
-                  <span className="quizplay-feedback-titletext">{result.correct ? "Richtig" : "Falsch"}</span>
+                  <span className="quizplay-feedback-titletext">
+                    {result.correct ? "Richtig" : "Falsch"}
+                  </span>
                   <span
                     className={[
                       "material-symbols-outlined",
@@ -301,7 +333,11 @@ const QuizReview = () => {
                   </span>
                 </div>
 
-                {result.explanation && <div className="quizplay-feedback-text">{result.explanation}</div>}
+                {result.explanation && (
+                  <div className="quizplay-feedback-text">
+                    {result.explanation}
+                  </div>
+                )}
               </div>
             )}
 

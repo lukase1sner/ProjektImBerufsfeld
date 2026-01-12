@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/QuizzesFortsetzen.css";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 
-const API_BASE = "http://localhost:8080/api";
-
 const QuizzesFortsetzen = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const navigate = useNavigate();
   const authToken = localStorage.getItem("authToken");
 
@@ -23,13 +23,23 @@ const QuizzesFortsetzen = () => {
   };
 
   const load = async () => {
-    if (!authToken) return;
+    if (!API_BASE) {
+      setError("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+      setLoading(false);
+      return;
+    }
+
+    if (!authToken) {
+      setError("Nicht eingeloggt.");
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
       setError("");
 
-      const res = await fetch(`${API_BASE}/play/quizzes/resumable`, {
+      const res = await fetch(`${API_BASE}/api/play/quizzes/resumable`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
@@ -48,7 +58,7 @@ const QuizzesFortsetzen = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [API_BASE]);
 
   const handleContinue = (attemptId, finished) => {
     if (finished) {
@@ -59,12 +69,12 @@ const QuizzesFortsetzen = () => {
   };
 
   const handleRestart = async (quizId) => {
-    if (!authToken) return;
+    if (!API_BASE || !authToken) return;
 
     try {
       setError("");
 
-      const res = await fetch(`${API_BASE}/play/quizzes/${quizId}/restart`, {
+      const res = await fetch(`${API_BASE}/api/play/quizzes/${quizId}/restart`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -75,14 +85,14 @@ const QuizzesFortsetzen = () => {
       const attemptId = json?.attemptId;
       if (!attemptId) throw new Error("restart: attemptId fehlt in Response");
 
-      // ✅ WICHTIG: lokalen Cache für diesen Attempt löschen
+      // ✅ lokalen Cache für diesen Attempt löschen
       try {
         sessionStorage.removeItem(`quiz_answer_cache_${attemptId}`);
       } catch {
         // ignore
       }
 
-      // Optional: Liste neu laden (damit UI sofort 0% zeigt)
+      // Liste neu laden
       await load();
 
       navigate(`/anwender/quiz/attempt/${attemptId}`);
@@ -109,17 +119,30 @@ const QuizzesFortsetzen = () => {
             {items.map((q) => {
               const title = q.quizTitle ?? q.title ?? "Quiz";
 
-              const totalQuestions = Number.isFinite(q.totalQuestions) ? q.totalQuestions : 0;
-              const answeredQuestions = Number.isFinite(q.answeredQuestions) ? q.answeredQuestions : 0;
+              const totalQuestions = Number.isFinite(q.totalQuestions)
+                ? q.totalQuestions
+                : 0;
+              const answeredQuestions = Number.isFinite(q.answeredQuestions)
+                ? q.answeredQuestions
+                : 0;
 
               const finished =
                 typeof q.finished === "boolean"
                   ? q.finished
-                  : totalQuestions > 0 && answeredQuestions >= totalQuestions;
+                  : totalQuestions > 0 &&
+                    answeredQuestions >= totalQuestions;
 
               const percent =
                 totalQuestions > 0
-                  ? Math.min(100, Math.max(0, Math.round((answeredQuestions / totalQuestions) * 100)))
+                  ? Math.min(
+                      100,
+                      Math.max(
+                        0,
+                        Math.round(
+                          (answeredQuestions / totalQuestions) * 100
+                        )
+                      )
+                    )
                   : 0;
 
               return (
@@ -132,7 +155,10 @@ const QuizzesFortsetzen = () => {
                     </div>
 
                     <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: `${percent}%` }} />
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${percent}%` }}
+                      />
                     </div>
 
                     <div className="progress-percent">{percent}%</div>
@@ -141,7 +167,9 @@ const QuizzesFortsetzen = () => {
                   <div className="quiz-resume-actions-col">
                     <button
                       className="quiz-resume-button primary btn-shine"
-                      onClick={() => handleContinue(q.attemptId, finished)}
+                      onClick={() =>
+                        handleContinue(q.attemptId, finished)
+                      }
                     >
                       {finished ? "Ergebnisse ansehen" : "Fortsetzen"}
                     </button>

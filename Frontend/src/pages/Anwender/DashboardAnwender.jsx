@@ -4,6 +4,8 @@ import "../../styles/DashboardAnwender.css";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 
 const DashboardAnwender = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const [user, setUser] = useState({ firstName: "", lastName: "" });
   const navigate = useNavigate();
 
@@ -14,7 +16,12 @@ const DashboardAnwender = () => {
       if (!authUserId || !authToken) return;
 
       try {
-        const res = await fetch(`http://localhost:8080/api/users/auth/${authUserId}`, {
+        if (!API_BASE) {
+          console.warn("VITE_API_BASE_URL ist nicht gesetzt.");
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/api/users/auth/${authUserId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -35,7 +42,7 @@ const DashboardAnwender = () => {
     }
 
     loadUser();
-  }, []);
+  }, [API_BASE]);
 
   return (
     <AnwenderLayout>
@@ -48,7 +55,9 @@ const DashboardAnwender = () => {
           {/* --- Card 1 --- */}
           <div className="dashboard-anwender-card">
             <div className="dashboard-card-header">
-              <span className="material-symbols-outlined card-icon icon-blue">play_arrow</span>
+              <span className="material-symbols-outlined card-icon icon-blue">
+                play_arrow
+              </span>
               <h3>Quizzes fortsetzen</h3>
             </div>
             <button
@@ -62,7 +71,9 @@ const DashboardAnwender = () => {
           {/* --- Card 2 --- */}
           <div className="dashboard-anwender-card">
             <div className="dashboard-card-header">
-              <span className="material-symbols-outlined card-icon icon-purple">quiz</span>
+              <span className="material-symbols-outlined card-icon icon-purple">
+                quiz
+              </span>
               <h3>Neue Quizzes entdecken</h3>
             </div>
             <button
@@ -76,7 +87,9 @@ const DashboardAnwender = () => {
           {/* --- Card 3 --- */}
           <div className="dashboard-anwender-card">
             <div className="dashboard-card-header">
-              <span className="material-symbols-outlined card-icon icon-orange">trophy</span>
+              <span className="material-symbols-outlined card-icon icon-orange">
+                trophy
+              </span>
               <h3>Bestenliste anzeigen</h3>
             </div>
             <button

@@ -73,13 +73,22 @@ function LoginPage() {
     if (!ok) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+      if (!API_BASE) {
+        setLoginError(
+          "Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt."
+        );
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setLoginError(data.error || "Ungültige Anmeldedaten.");
@@ -169,6 +178,13 @@ function LoginPage() {
                 <span
                   className="toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setShowPassword((prev) => !prev);
+                    }
+                  }}
                 >
                   <span className="material-symbols-outlined">
                     {showPassword ? "visibility" : "visibility_off"}

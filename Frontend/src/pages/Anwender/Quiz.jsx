@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import AnwenderLayout from "../../layout/AnwenderLayout.jsx";
 import "../../styles/Quiz.css";
 
-const API_BASE = "http://localhost:8080/api";
-
 const Quiz = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const { quizId, attemptId: attemptIdParam } = useParams();
   const navigate = useNavigate();
 
@@ -138,8 +138,15 @@ const Quiz = () => {
     throw new Error(msg);
   };
 
+  const ensureApiBase = () => {
+    if (!API_BASE) {
+      throw new Error("Konfigurationsfehler: VITE_API_BASE_URL ist nicht gesetzt.");
+    }
+  };
+
   const startAttempt = async (qid) => {
-    const res = await fetch(`${API_BASE}/play/attempts`, {
+    ensureApiBase();
+    const res = await fetch(`${API_BASE}/api/play/attempts`, {
       method: "POST",
       headers: headers(true),
       body: JSON.stringify({ quizId: qid }),
@@ -150,7 +157,8 @@ const Quiz = () => {
   };
 
   const loadMeta = async (aId) => {
-    const res = await fetch(`${API_BASE}/play/attempts/${aId}/meta`, {
+    ensureApiBase();
+    const res = await fetch(`${API_BASE}/api/play/attempts/${aId}/meta`, {
       headers: headers(false),
     });
     const { raw, json } = await readBodyOnce(res);
@@ -159,7 +167,8 @@ const Quiz = () => {
   };
 
   const loadOverview = async (aId) => {
-    const res = await fetch(`${API_BASE}/play/attempts/${aId}/overview`, {
+    ensureApiBase();
+    const res = await fetch(`${API_BASE}/api/play/attempts/${aId}/overview`, {
       headers: headers(false),
     });
     const { raw, json } = await readBodyOnce(res);
@@ -168,9 +177,13 @@ const Quiz = () => {
   };
 
   const loadQuestionByPos = async (aId, pos) => {
-    const res = await fetch(`${API_BASE}/play/attempts/${aId}/question/${pos}`, {
-      headers: headers(false),
-    });
+    ensureApiBase();
+    const res = await fetch(
+      `${API_BASE}/api/play/attempts/${aId}/question/${pos}`,
+      {
+        headers: headers(false),
+      }
+    );
     const { raw, json } = await readBodyOnce(res);
     if (!res.ok) throwHttpError(res, raw, json);
     return json;
@@ -183,7 +196,8 @@ const Quiz = () => {
     return "open";
   };
 
-  const getOverviewItem = (pos, ov) => (ov?.items || []).find((x) => x.position === pos);
+  const getOverviewItem = (pos, ov) =>
+    (ov?.items || []).find((x) => x.position === pos);
 
   const isPosAnswered = (pos) => {
     if (answerCache[pos]) return true;
@@ -197,36 +211,48 @@ const Quiz = () => {
 
     const answered = q.answered ?? q.isAnswered ?? q.alreadyAnswered ?? false;
 
-    const sel =
-      Number.isInteger(q.selectedIndex) ? q.selectedIndex
-      : Number.isInteger(q.userSelectedIndex) ? q.userSelectedIndex
-      : Number.isInteger(q.chosenIndex) ? q.chosenIndex
-      : Number.isInteger(q.answerIndex) ? q.answerIndex
+    const sel = Number.isInteger(q.selectedIndex)
+      ? q.selectedIndex
+      : Number.isInteger(q.userSelectedIndex)
+      ? q.userSelectedIndex
+      : Number.isInteger(q.chosenIndex)
+      ? q.chosenIndex
+      : Number.isInteger(q.answerIndex)
+      ? q.answerIndex
       : null;
 
-    const correctIndex =
-      Number.isInteger(q.correctIndex) ? q.correctIndex
-      : Number.isInteger(q.correct_index) ? q.correct_index
-      : Number.isInteger(q.solutionIndex) ? q.solutionIndex
+    const correctIndex = Number.isInteger(q.correctIndex)
+      ? q.correctIndex
+      : Number.isInteger(q.correct_index)
+      ? q.correct_index
+      : Number.isInteger(q.solutionIndex)
+      ? q.solutionIndex
       : null;
 
     const explanation = q.explanation ?? q.feedback ?? q.reason ?? "";
 
     const nested = q.result || q.answerResult || q.evaluation || null;
     const nestedCorrect = nested?.correct;
-    const nestedCorrectIndex = Number.isInteger(nested?.correctIndex) ? nested.correctIndex : null;
+    const nestedCorrectIndex = Number.isInteger(nested?.correctIndex)
+      ? nested.correctIndex
+      : null;
     const nestedExplanation = nested?.explanation ?? null;
     const nestedScore = Number.isFinite(nested?.score) ? nested.score : null;
 
     if (!answered && sel === null && !nested) return { sel: null, res: null };
 
-    const finalSel = sel ?? (Number.isInteger(nested?.selectedIndex) ? nested.selectedIndex : null);
+    const finalSel =
+      sel ?? (Number.isInteger(nested?.selectedIndex) ? nested.selectedIndex : null);
     const finalCorrectIndex = correctIndex ?? nestedCorrectIndex;
     const finalExplanation = explanation || nestedExplanation || "";
 
-    if (finalSel === null || finalCorrectIndex === null) return { sel: finalSel, res: null };
+    if (finalSel === null || finalCorrectIndex === null)
+      return { sel: finalSel, res: null };
 
-    const correct = typeof nestedCorrect === "boolean" ? nestedCorrect : finalSel === finalCorrectIndex;
+    const correct =
+      typeof nestedCorrect === "boolean"
+        ? nestedCorrect
+        : finalSel === finalCorrectIndex;
 
     return {
       sel: finalSel,
@@ -273,6 +299,8 @@ const Quiz = () => {
       try {
         setLoading(true);
         setError("");
+
+        ensureApiBase();
 
         let aId = routeAttemptId;
 
@@ -333,7 +361,7 @@ const Quiz = () => {
 
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizId, routeAttemptId, authToken, navigate]);
+  }, [quizId, routeAttemptId, authToken, navigate, API_BASE]);
 
   const goToPos = async (pos) => {
     if (!attemptId) return;
@@ -377,7 +405,9 @@ const Quiz = () => {
       setError("");
       setSelectedIndex(idx);
 
-      const res = await fetch(`${API_BASE}/play/attempts/${attemptId}/answer`, {
+      ensureApiBase();
+
+      const res = await fetch(`${API_BASE}/api/play/attempts/${attemptId}/answer`, {
         method: "POST",
         headers: headers(true),
         body: JSON.stringify({
@@ -408,9 +438,12 @@ const Quiz = () => {
   };
 
   const progressText =
-    meta.totalQuestions > 0 ? `Frage ${activePos + 1} / ${meta.totalQuestions}` : `Frage ${activePos + 1}`;
+    meta.totalQuestions > 0
+      ? `Frage ${activePos + 1} / ${meta.totalQuestions}`
+      : `Frage ${activePos + 1}`;
 
-  const isFinished = meta.totalQuestions > 0 && meta.answeredQuestions >= meta.totalQuestions;
+  const isFinished =
+    meta.totalQuestions > 0 && meta.answeredQuestions >= meta.totalQuestions;
 
   const handleNextClick = async () => {
     if (!attemptId) return;
@@ -427,7 +460,9 @@ const Quiz = () => {
       const ov = overview || (await loadOverview(attemptId));
       const nextOpen = (ov.items || []).find((x) => !x.answered)?.position;
 
-      const nextPos = nextOpen ?? Math.min(activePos + 1, Math.max(0, (ov.totalQuestions || 1) - 1));
+      const nextPos =
+        nextOpen ??
+        Math.min(activePos + 1, Math.max(0, (ov.totalQuestions || 1) - 1));
       await goToPos(nextPos);
     } catch (e) {
       console.error(e);
@@ -459,7 +494,9 @@ const Quiz = () => {
                     aria-haspopup="listbox"
                     aria-expanded={dropdownOpen}
                   >
-                    <span className="material-symbols-outlined">arrow_drop_down_circle</span>
+                    <span className="material-symbols-outlined">
+                      arrow_drop_down_circle
+                    </span>
                   </button>
 
                   {dropdownOpen && (
@@ -472,13 +509,22 @@ const Quiz = () => {
                         {overview.items.map((it) => {
                           const st = statusFor(it);
                           const isActive = it.position === activePos;
-                          const iconName = st === "correct" ? "check_circle" : st === "wrong" ? "cancel" : null;
+                          const iconName =
+                            st === "correct"
+                              ? "check_circle"
+                              : st === "wrong"
+                              ? "cancel"
+                              : null;
 
                           return (
                             <button
                               key={it.position}
                               type="button"
-                              className={["quizplay-qselect-item", `is-${st}`, isActive ? "is-active" : ""]
+                              className={[
+                                "quizplay-qselect-item",
+                                `is-${st}`,
+                                isActive ? "is-active" : "",
+                              ]
                                 .filter(Boolean)
                                 .join(" ")}
                               onClick={() => goToPos(it.position)}
@@ -519,7 +565,9 @@ const Quiz = () => {
         {!loading && !error && question && (
           <div className="quizplay-card">
             <div className="quizplay-question">{question.question}</div>
-            <div className="quizplay-instruction">Wähle die richtige Antwort aus</div>
+            <div className="quizplay-instruction">
+              Wähle die richtige Antwort aus
+            </div>
 
             <div className="quizplay-options">
               {(question.options || []).map((opt, idx) => {
@@ -528,7 +576,11 @@ const Quiz = () => {
                 const isCorrectAnswer = result?.correctIndex === idx;
                 const showCorrect = !!result && isCorrectAnswer;
                 const showWrong = !!result && isSelected && !result.correct;
-                const iconName = showCorrect ? "check_circle" : showWrong ? "cancel" : null;
+                const iconName = showCorrect
+                  ? "check_circle"
+                  : showWrong
+                  ? "cancel"
+                  : null;
 
                 const cls = [
                   "quizplay-option",
@@ -540,7 +592,12 @@ const Quiz = () => {
                   .join(" ");
 
                 return (
-                  <button key={idx} className={cls} onClick={() => handleAnswer(idx)} disabled={lockOptions}>
+                  <button
+                    key={idx}
+                    className={cls}
+                    onClick={() => handleAnswer(idx)}
+                    disabled={lockOptions}
+                  >
                     <span className="quizplay-option-text">{opt}</span>
 
                     {iconName && (
@@ -573,9 +630,16 @@ const Quiz = () => {
             )}
 
             {result && (
-              <div className={["quizplay-feedback", result.correct ? "is-correct" : "is-wrong"].join(" ")}>
+              <div
+                className={[
+                  "quizplay-feedback",
+                  result.correct ? "is-correct" : "is-wrong",
+                ].join(" ")}
+              >
                 <div className="quizplay-feedback-title">
-                  <span className="quizplay-feedback-titletext">{result.correct ? "Richtig" : "Falsch"}</span>
+                  <span className="quizplay-feedback-titletext">
+                    {result.correct ? "Richtig" : "Falsch"}
+                  </span>
                   <span
                     className={[
                       "material-symbols-outlined",
@@ -587,9 +651,14 @@ const Quiz = () => {
                   </span>
                 </div>
 
-                {result.explanation && <div className="quizplay-feedback-text">{result.explanation}</div>}
+                {result.explanation && (
+                  <div className="quizplay-feedback-text">{result.explanation}</div>
+                )}
 
-                <button className="quizplay-next btn-shine" onClick={handleNextClick}>
+                <button
+                  className="quizplay-next btn-shine"
+                  onClick={handleNextClick}
+                >
                   {isFinished ? "Ergebnisse anzeigen" : "Nächste Frage"}
                 </button>
               </div>

@@ -4,6 +4,7 @@ import EntwicklerLayout from "../../layout/EntwicklerLayout";
 import "../../styles/NeuesQuiz.css";
 
 const NeuesQuiz = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL; // Die API_BASE URL aus der Umgebungsdatei
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -64,7 +65,7 @@ const NeuesQuiz = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch("https://bw13.app.n8n.cloud/webhook/quiz-generate", {
+      const res = await fetch("https://bw13.app.n8n.cloud/webhook/quiz-generate", { // Webhook bleibt unverändert
         method: "POST",
         body: formData,
       });
@@ -195,7 +196,6 @@ const NeuesQuiz = () => {
     });
   };
 
-  // ✅ helper: Body nur einmal lesen
   const readBodyOnce = async (response) => {
     const raw = await response.text();
     try {
@@ -240,7 +240,7 @@ const NeuesQuiz = () => {
       setIsSaving(true);
       setError("");
 
-      const res = await fetch("http://localhost:8080/api/quizzes", {
+      const res = await fetch(`${API_BASE}/api/quizzes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -320,7 +320,6 @@ const NeuesQuiz = () => {
               </span>
             </div>
 
-            {/* ✅ KORREKTER LINK auf deine Route aus AppRouter */}
             <button
               type="button"
               className="generate-btn"
