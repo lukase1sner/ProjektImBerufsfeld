@@ -404,7 +404,7 @@ const QuizzesVerwalten = () => {
                         {q.isPublished ? (
                           <span className="qv-badge published">Veröffentlicht</span>
                         ) : (
-                          <span className="qv-badge draft">Privat</span>
+                          <span className="qv-badge draft">Nicht veröffentlicht</span>
                         )}
                       </div>
                     </div>
@@ -543,7 +543,7 @@ const QuizzesVerwalten = () => {
                         checked={quizDetail.isPublished === false}
                         onChange={() => setPublished(false)}
                       />
-                      Quiz privat halten
+                      Quiz nicht veröffentlichen
                     </label>
                   </div>
 

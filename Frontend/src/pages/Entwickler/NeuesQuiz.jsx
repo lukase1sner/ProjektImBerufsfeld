@@ -554,7 +554,7 @@ const NeuesQuiz = () => {
                         onChange={() => updatePublished(false)}
                         style={{ marginRight: "0.6rem", cursor: "pointer" }}
                       />
-                      Quiz privat halten
+                      Quiz nicht veröffentlichen
                     </label>
                   </div>
                 </div>
