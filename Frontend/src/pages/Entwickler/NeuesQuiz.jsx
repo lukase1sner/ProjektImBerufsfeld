@@ -65,7 +65,8 @@ const NeuesQuiz = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch("https://bw13.app.n8n.cloud/webhook/quiz-generate", { // Webhook bleibt unverändert
+      const res = await fetch("https://bw13.app.n8n.cloud/webhook/quiz-generate", {
+        // Webhook bleibt unverändert
         method: "POST",
         body: formData,
       });
@@ -83,9 +84,7 @@ const NeuesQuiz = () => {
         published: Boolean(data?.published ?? data?.isPublished ?? false),
         questions: (data?.questions ?? []).map((q) => ({
           question: q?.question ?? "",
-          options: Array.isArray(q?.options)
-            ? [...q.options, "", "", "", ""].slice(0, 4)
-            : ["", "", "", ""],
+          options: Array.isArray(q?.options) ? [...q.options, "", "", "", ""].slice(0, 4) : ["", "", "", ""],
           correctIndex: Number.isInteger(q?.correctIndex) ? q.correctIndex : 0,
           explanation: q?.explanation ?? "",
         })),
@@ -131,9 +130,7 @@ const NeuesQuiz = () => {
 
       for (let j = 0; j < 4; j++) {
         if (!q.options[j] || q.options[j].trim() === "") {
-          setError(
-            `Frage ${i + 1}: Antwort ${String.fromCharCode(65 + j)} darf nicht leer sein.`
-          );
+          setError(`Frage ${i + 1}: Antwort ${String.fromCharCode(65 + j)} darf nicht leer sein.`);
           return false;
         }
       }
@@ -154,8 +151,7 @@ const NeuesQuiz = () => {
   };
 
   const updateQuizTitle = (value) => setQuiz((prev) => ({ ...prev, title: value }));
-  const updatePublished = (value) =>
-    setQuiz((prev) => ({ ...prev, published: value }));
+  const updatePublished = (value) => setQuiz((prev) => ({ ...prev, published: value }));
 
   const updateQuestionText = (qIndex, value) => {
     setQuiz((prev) => {
@@ -184,6 +180,16 @@ const NeuesQuiz = () => {
       const next = { ...prev };
       next.questions = [...next.questions];
       next.questions[qIndex] = { ...next.questions[qIndex], explanation: value };
+      return next;
+    });
+  };
+
+  // ✅ NEU: correctIndex wie bei "Quizzes verwalten" per Klick setzen
+  const updateCorrectIndex = (qIndex, optIndex) => {
+    setQuiz((prev) => {
+      const next = { ...prev };
+      next.questions = [...next.questions];
+      next.questions[qIndex] = { ...next.questions[qIndex], correctIndex: optIndex };
       return next;
     });
   };
@@ -298,10 +304,7 @@ const NeuesQuiz = () => {
                 flexWrap: "wrap",
               }}
             >
-              <span
-                className="material-symbols-outlined quiz-success-icon"
-                style={{ flex: "0 0 auto" }}
-              >
+              <span className="material-symbols-outlined quiz-success-icon" style={{ flex: "0 0 auto" }}>
                 check_circle
               </span>
 
@@ -383,19 +386,13 @@ const NeuesQuiz = () => {
                 {file && (
                   <div className="file-pill" onClick={(e) => e.stopPropagation()}>
                     <div className="file-left">
-                      <span className="material-symbols-outlined file-icon">
-                        description
-                      </span>
+                      <span className="material-symbols-outlined file-icon">description</span>
                       <span className="file-name" title={file.name}>
                         {file.name}
                       </span>
                     </div>
 
-                    <button
-                      type="button"
-                      className="file-remove"
-                      onClick={clearFile}
-                    >
+                    <button type="button" className="file-remove" onClick={clearFile}>
                       Entfernen
                     </button>
                   </div>
@@ -404,12 +401,7 @@ const NeuesQuiz = () => {
             </div>
 
             {!quiz && !isGenerating && (
-              <button
-                type="button"
-                className="generate-btn"
-                disabled={!file}
-                onClick={generateQuestions}
-              >
+              <button type="button" className="generate-btn" disabled={!file} onClick={generateQuestions}>
                 Fragen generieren
               </button>
             )}
@@ -427,11 +419,7 @@ const NeuesQuiz = () => {
               <div className="quiz-result">
                 <div className="quiz-meta">
                   <label className="field-label">Quiz-Titel</label>
-                  <input
-                    className="field-input"
-                    value={quiz.title}
-                    onChange={(e) => updateQuizTitle(e.target.value)}
-                  />
+                  <input className="field-input" value={quiz.title} onChange={(e) => updateQuizTitle(e.target.value)} />
                 </div>
 
                 <div className="quiz-questions">
@@ -440,11 +428,7 @@ const NeuesQuiz = () => {
                       <div className="q-head">
                         <div className="q-head-row">
                           <div className="q-index">Frage {qIndex + 1}</div>
-                          <button
-                            type="button"
-                            className="q-remove"
-                            onClick={() => removeQuestion(qIndex)}
-                          >
+                          <button type="button" className="q-remove" onClick={() => removeQuestion(qIndex)}>
                             Entfernen
                           </button>
                         </div>
@@ -454,9 +438,7 @@ const NeuesQuiz = () => {
                           className="field-textarea"
                           value={q.question}
                           rows={3}
-                          onChange={(e) =>
-                            updateQuestionText(qIndex, e.target.value)
-                          }
+                          onChange={(e) => updateQuestionText(qIndex, e.target.value)}
                         />
                       </div>
 
@@ -470,28 +452,28 @@ const NeuesQuiz = () => {
                           return (
                             <div
                               key={optIndex}
-                              className={`q-option q-option-colored ${
-                                isCorrect ? "is-correct" : "is-wrong"
-                              }`}
+                              role="button"
+                              tabIndex={0}
+                              className={`q-option q-option-colored ${isCorrect ? "is-correct" : "is-wrong"}`}
+                              onClick={() => updateCorrectIndex(qIndex, optIndex)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ")
+                                  updateCorrectIndex(qIndex, optIndex);
+                              }}
                             >
                               <div className="q-option-left">
-                                <div className="q-option-letter">
-                                  {letter})
-                                </div>
+                                <div className="q-option-letter">{letter})</div>
 
                                 <input
                                   className="opt-input"
                                   value={opt}
-                                  onChange={(e) =>
-                                    updateOptionText(qIndex, optIndex, e.target.value)
-                                  }
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => updateOptionText(qIndex, optIndex, e.target.value)}
                                 />
                               </div>
 
                               <span
-                                className={`material-symbols-outlined q-option-icon ${
-                                  isCorrect ? "correct" : "wrong"
-                                }`}
+                                className={`material-symbols-outlined q-option-icon ${isCorrect ? "correct" : "wrong"}`}
                               >
                                 {isCorrect ? "check_circle" : "cancel"}
                               </span>
@@ -506,9 +488,7 @@ const NeuesQuiz = () => {
                           className="field-textarea"
                           value={q.explanation}
                           rows={3}
-                          onChange={(e) =>
-                            updateExplanation(qIndex, e.target.value)
-                          }
+                          onChange={(e) => updateExplanation(qIndex, e.target.value)}
                         />
                       </div>
                     </div>
