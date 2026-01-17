@@ -144,9 +144,9 @@ const QuizResult = () => {
 
               <button
                 className="quizplay-next btn-shine"
-                onClick={() => navigate("/anwender/quizzes-fortsetzen")}
+                onClick={() => navigate("/anwender/dashboard")}
               >
-                Zurück
+                Dashboard
               </button>
             </div>
           </div>
