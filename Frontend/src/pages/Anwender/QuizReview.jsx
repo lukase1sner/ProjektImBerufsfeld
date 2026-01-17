@@ -372,9 +372,9 @@ const QuizReview = () => {
               <div style={{ marginLeft: "auto" }}>
                 <button
                   className="quizplay-next btn-shine"
-                  onClick={() => navigate(`/anwender/quiz/result/${attemptId}`)}
+                  onClick={() => navigate("/anwender/dashboard")}
                 >
-                  Zurück
+                  Dashboard
                 </button>
               </div>
             </div>
